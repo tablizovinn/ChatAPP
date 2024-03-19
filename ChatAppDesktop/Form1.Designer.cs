@@ -38,8 +38,10 @@
             // 
             // messageRTB
             // 
-            this.messageRTB.Location = new System.Drawing.Point(468, 37);
+            this.messageRTB.Cursor = System.Windows.Forms.Cursors.No;
+            this.messageRTB.Location = new System.Drawing.Point(472, 36);
             this.messageRTB.Name = "messageRTB";
+            this.messageRTB.ReadOnly = true;
             this.messageRTB.Size = new System.Drawing.Size(300, 351);
             this.messageRTB.TabIndex = 0;
             this.messageRTB.Text = "";
@@ -103,6 +105,7 @@
             this.Controls.Add(this.messageRTB);
             this.Name = "Form1";
             this.Text = "Form1";
+            
             this.ResumeLayout(false);
             this.PerformLayout();
 
