@@ -15,20 +15,24 @@ namespace WebApplication1.Hubs
 
         public async Task SendMessage(string user, string message)
         {
-            
             string cacheKey = $"{user}_{message}";
+            string cachedMessage = _memoryCache.Get<string>(cacheKey);
 
-           
-            if (!_memoryCache.TryGetValue(cacheKey, out string cachedMessage))
+            if (cachedMessage == null)
             {
-                
                 cachedMessage = message;
-                
-                _memoryCache.Set(cacheKey, cachedMessage, TimeSpan.FromMinutes(10));
+                _memoryCache.Set(cacheKey, cachedMessage, TimeSpan.FromSeconds(30));
             }
 
-           
             await Clients.All.SendAsync("ReceiveMessage", user, cachedMessage);
+        }
+
+        public string GetCacheMessage(string user, string message)
+        {
+            string cacheKey = $"{user}_{message}";
+            string cachedMessage = _memoryCache.Get<string>(cacheKey);
+
+            return cachedMessage;
         }
     }
 }

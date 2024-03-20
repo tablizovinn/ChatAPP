@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "memorycache", "memorycache.csproj", "{51857F28-50D5-4F42-BEF7-76A21EDFDF76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memorycache", "memorycache.csproj", "{51857F28-50D5-4F42-BEF7-76A21EDFDF76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp1", "..\WinFormsApp1\WinFormsApp1.csproj", "{FB45FC40-1230-4ED4-B2DF-3561505E0865}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{51857F28-50D5-4F42-BEF7-76A21EDFDF76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51857F28-50D5-4F42-BEF7-76A21EDFDF76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51857F28-50D5-4F42-BEF7-76A21EDFDF76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB45FC40-1230-4ED4-B2DF-3561505E0865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB45FC40-1230-4ED4-B2DF-3561505E0865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB45FC40-1230-4ED4-B2DF-3561505E0865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB45FC40-1230-4ED4-B2DF-3561505E0865}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

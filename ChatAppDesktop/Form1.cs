@@ -16,17 +16,17 @@ namespace ChatAppDesktop
             InitializeComponent();
             hubConnection = new HubConnectionBuilder().WithUrl(signalRConnection).Build();
 
-           
+
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
-               
+
                 messageRTB.Invoke((MethodInvoker)delegate
                 {
                     messageRTB.AppendText($"{user}: {message}\n");
                 });
             });
 
-           
+
             hubConnection.Closed += async (error) =>
             {
                 await Task.Delay(0);
@@ -37,7 +37,7 @@ namespace ChatAppDesktop
                 }
             };
 
-           
+
             hubConnection.StartAsync().ContinueWith(task =>
             {
                 if (task.IsFaulted)
@@ -46,7 +46,7 @@ namespace ChatAppDesktop
                 }
                 else
                 {
-                    
+
                     sendBtn.Enabled = true;
                 }
             });
@@ -59,10 +59,10 @@ namespace ChatAppDesktop
                 string user = usernameTB.Text;
                 string message = messageTB.Text;
 
-                
+
                 await hubConnection.SendAsync("SendMessage", user, message);
 
-                
+
                 messageTB.Clear();
             }
             else
@@ -74,8 +74,38 @@ namespace ChatAppDesktop
         private void Form1_Load(object sender, EventArgs e)
         {
 
-           
+
         }
+
+        private void Form1_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void cacheBtn_Click(object sender, EventArgs e)
+        {
+            if (hubConnection.State == HubConnectionState.Connected)
+            {
+                string user = usernameTB.Text;
+                string message = messageTB.Text;
+
+                // Call GetCacheMessage method on the hub to retrieve cached message
+                string cachedMessage = await hubConnection.InvokeAsync<string>("GetCacheMessage", user, message);
+
+                if (!string.IsNullOrEmpty(cachedMessage))
+                {
+                    MessageBox.Show($"Cached Message: {cachedMessage}");
+                }
+                else
+                {
+                    MessageBox.Show("No cached message available.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("SignalR connection is not active.");
+            }
+        }
+
     }
 }
-

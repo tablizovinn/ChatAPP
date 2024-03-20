@@ -34,6 +34,7 @@
             this.usernameTB = new System.Windows.Forms.TextBox();
             this.messageTB = new System.Windows.Forms.TextBox();
             this.sendBtn = new System.Windows.Forms.Button();
+            this.cacheBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // messageRTB
@@ -92,11 +93,22 @@
             this.sendBtn.UseVisualStyleBackColor = true;
             this.sendBtn.Click += new System.EventHandler(this.sendBtn_Click);
             // 
+            // cacheBtn
+            // 
+            this.cacheBtn.Location = new System.Drawing.Point(171, 273);
+            this.cacheBtn.Name = "cacheBtn";
+            this.cacheBtn.Size = new System.Drawing.Size(97, 47);
+            this.cacheBtn.TabIndex = 6;
+            this.cacheBtn.Text = "cache";
+            this.cacheBtn.UseVisualStyleBackColor = true;
+            this.cacheBtn.Click += new System.EventHandler(this.cacheBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(808, 451);
+            this.Controls.Add(this.cacheBtn);
             this.Controls.Add(this.sendBtn);
             this.Controls.Add(this.messageTB);
             this.Controls.Add(this.usernameTB);
@@ -105,7 +117,7 @@
             this.Controls.Add(this.messageRTB);
             this.Name = "Form1";
             this.Text = "Form1";
-            
+            this.Load += new System.EventHandler(this.Form1_Load_1);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -119,6 +131,7 @@
         private System.Windows.Forms.TextBox usernameTB;
         private System.Windows.Forms.TextBox messageTB;
         private System.Windows.Forms.Button sendBtn;
+        private System.Windows.Forms.Button cacheBtn;
     }
 }
 
