@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Configuration;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ChatAppDesktop
 {
@@ -82,14 +83,16 @@ namespace ChatAppDesktop
 
         }
 
-        private async void cacheBtn_Click(object sender, EventArgs e)
+       
+
+        private async void cacheBtn_Click_1(object sender, EventArgs e)
         {
             if (hubConnection.State == HubConnectionState.Connected)
             {
                 string user = usernameTB.Text;
                 string message = messageTB.Text;
 
-                
+
                 string cachedMessage = await hubConnection.InvokeAsync<string>("GetCacheMessage", user, message);
 
                 if (!string.IsNullOrEmpty(cachedMessage))
@@ -106,6 +109,5 @@ namespace ChatAppDesktop
                 MessageBox.Show("SignalR connection is not active.");
             }
         }
-
     }
 }

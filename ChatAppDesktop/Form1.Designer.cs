@@ -95,13 +95,13 @@
             // 
             // cacheBtn
             // 
-            this.cacheBtn.Location = new System.Drawing.Point(171, 273);
+            this.cacheBtn.Location = new System.Drawing.Point(184, 262);
             this.cacheBtn.Name = "cacheBtn";
             this.cacheBtn.Size = new System.Drawing.Size(97, 47);
             this.cacheBtn.TabIndex = 6;
             this.cacheBtn.Text = "cache";
             this.cacheBtn.UseVisualStyleBackColor = true;
-            this.cacheBtn.Click += new System.EventHandler(this.cacheBtn_Click);
+            this.cacheBtn.Click += new System.EventHandler(this.cacheBtn_Click_1);
             // 
             // Form1
             // 
@@ -117,7 +117,6 @@
             this.Controls.Add(this.messageRTB);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load_1);
             this.ResumeLayout(false);
             this.PerformLayout();
 
