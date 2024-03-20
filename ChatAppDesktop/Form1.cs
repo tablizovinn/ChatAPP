@@ -89,7 +89,7 @@ namespace ChatAppDesktop
                 string user = usernameTB.Text;
                 string message = messageTB.Text;
 
-                // Call GetCacheMessage method on the hub to retrieve cached message
+                
                 string cachedMessage = await hubConnection.InvokeAsync<string>("GetCacheMessage", user, message);
 
                 if (!string.IsNullOrEmpty(cachedMessage))
