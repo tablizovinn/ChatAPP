@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using System.Configuration;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using WebGrease;
 
 namespace ChatAppDesktop
 {
@@ -11,6 +12,7 @@ namespace ChatAppDesktop
     {
         HubConnection hubConnection;
         string signalRConnection = ConfigurationManager.AppSettings["hubConnection"];
+
 
         public Form1()
         {
@@ -83,25 +85,37 @@ namespace ChatAppDesktop
 
         }
 
-       
+
 
         private async void cacheBtn_Click_1(object sender, EventArgs e)
         {
             if (hubConnection.State == HubConnectionState.Connected)
             {
-                string user = usernameTB.Text;
-                string message = messageTB.Text;
-
-
-                string cachedMessage = await hubConnection.InvokeAsync<string>("GetCacheMessage", user, message);
-
-                if (!string.IsNullOrEmpty(cachedMessage))
+                try
                 {
-                    MessageBox.Show($"Cached Message: {cachedMessage}");
+                    // Call GetAllCachedItems method on the ChatHub
+                    Task<IEnumerable<(string, string)>> cachedItemsTask =
+                        hubConnection.InvokeAsync<IEnumerable<(string, string)>>("GetAllCachedItems");
+
+                    // Await for the task to complete
+                    IEnumerable<(string, string)> cachedItems = await cachedItemsTask;
+
+                    if (cachedItems != null)
+                    {
+                        foreach (var item in cachedItems)
+                        {
+                            // Display each cached item
+                            MessageBox.Show($"User: {item.Item1}, Message: {item.Item2}");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("No cached items available.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("No cached message available.");
+                    MessageBox.Show($"An error occurred: {ex.Message}");
                 }
             }
             else

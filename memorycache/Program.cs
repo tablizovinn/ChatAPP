@@ -1,65 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Caching;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace ChatAppConsole
+public class Program
 {
-    class Program
+    public static void Main(string[] args)
     {
-        static MemoryCache messageCache = new MemoryCache("MessageCache");
+        
+        var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            
+        
+        var cacheManager = new YourCacheManager(memoryCache);
 
-        static void Main(string[] args)
+        
+        while (true)
         {
-            Console.WriteLine("Welcome to the Chat App Console!");
+            Console.WriteLine("Enter user (or type 'exit' to quit):");
+            string user = Console.ReadLine();
 
-            // Simulate receiving messages
-            ReceiveMessage("Alice", "Hello, everyone!");
-            ReceiveMessage("Bob", "Hi, Alice!");
+            if (user.ToLower() == "exit")
+                break;
 
-            // Display cached messages
-            LoadCachedMessages();
+            Console.WriteLine("Enter message:");
+            string message = Console.ReadLine();
 
-            // Simulate sending a message
-            SendMessage("Alice", "How's everyone doing?");
+            
+            cacheManager.AddToCache(user, message);
 
-            // Display cached messages again
-            LoadCachedMessages();
-
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
+            Console.WriteLine("Item cached successfully.");
         }
 
-        static void ReceiveMessage(string user, string message)
+       
+        Console.WriteLine("Cached items:");
+        foreach (var item in cacheManager.GetAllCachedItems())
         {
-            // Cache the received message
-            CacheMessage(user, message);
-            Console.WriteLine($"Received message from {user}: {message}");
-        }
-
-        static void SendMessage(string user, string message)
-        {
-            // Simulate sending a message
-            Console.WriteLine($"Sending message from {user}: {message}");
-        }
-
-        static void CacheMessage(string user, string message)
-        {
-            // Construct a unique key for the message based on user and timestamp
-            string key = $"{user}_{DateTime.Now.Ticks}";
-
-            // Cache the message with a 10-minute expiration
-            messageCache.Set(key, message, DateTimeOffset.Now.AddMinutes(1));
-        }
-
-        static void LoadCachedMessages()
-        {
-            Console.WriteLine("Cached Messages:");
-            foreach (var cacheItem in messageCache)
-            {
-                var message = cacheItem.Value as string;
-                Console.WriteLine($"{cacheItem.Key}: {message}");
-            }
-            Console.WriteLine();
+            Console.WriteLine($"User: {item.User}, Message: {item.Message}");
         }
     }
+}
+
+public class YourCacheManager
+{
+    private readonly IMemoryCache _memoryCache;
+    private readonly Dictionary<string, string> _cachedKeys;
+
+    public YourCacheManager(IMemoryCache memoryCache)
+    {
+        _memoryCache = memoryCache;
+        _cachedKeys = new Dictionary<string, string>();
+    }
+
+    public void AddToCache(string user, string message)
+    {
+        string key = GenerateCacheKey(user, message);
+        _memoryCache.Set(key, true); 
+        _cachedKeys[key] = $"{user}_{message}";
+    }
+
+    
+    [("GetAllCachedItems")]
+    public IEnumerable<(string User, string Message)> GetAllCachedItems()
+    {
+        foreach (var kvp in _cachedKeys)
+        {
+            var userMessage = kvp.Value.Split('_');
+            var user = userMessage[0];
+            var message = userMessage[1];
+            yield return (user, message);
+        }
+    }
+
+    private string GenerateCacheKey(string user, string message)
+    {
+        return $"{user}_{message}";
+    }
+
+  
+
 }

@@ -1,45 +1,73 @@
-using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace WinFormsApp1
+namespace ChatAppWinForms
 {
     public partial class Form1 : Form
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCache _memoryCache;
+        private readonly YourCacheManager _cacheManager;
 
         public Form1()
         {
             InitializeComponent();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _cacheManager = new YourCacheManager(_memoryCache);
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private void sendBtn_Click(object sender, EventArgs e)
         {
-            string key = user.Text.Trim();
-            string value = message.Text.Trim();
+            string user = usernameTB.Text;
+            string message = messageTB.Text;
 
-            // Add or update the cache entry
-            _memoryCache.Set(key, value, TimeSpan.FromSeconds(10));
-
-            MessageBox.Show("Value saved to cache successfully!");
+            _cacheManager.AddToCache(user, message);
+            MessageBox.Show("Item cached successfully.");
         }
 
-        private void btnRet_Click(object sender, EventArgs e)
+        private void displayBtn_Click(object sender, EventArgs e)
         {
-            // Get the key from the textbox
-            string key = user.Text.Trim();
+            messageRTB.Clear();
+            foreach (var item in _cacheManager.GetAllCachedItems())
+            {
+                messageRTB.AppendText($"User: {item.User}, Message: {item.Message}\n");
+            }
+        }
+    }
 
-            // Try to retrieve the value from the cache
-            if (_memoryCache.TryGetValue(key, out string cachedValue))
+    public class YourCacheManager
+    {
+        private readonly IMemoryCache _memoryCache;
+        private readonly Dictionary<string, string> _cachedKeys;
+
+        public YourCacheManager(IMemoryCache memoryCache)
+        {
+            _memoryCache = memoryCache;
+            _cachedKeys = new Dictionary<string, string>();
+        }
+
+        public void AddToCache(string user, string message)
+        {
+            string key = GenerateCacheKey(user, message);
+            _memoryCache.Set(key, true);
+            _cachedKeys[key] = $"{user}_{message}";
+        }
+
+        public IEnumerable<(string User, string Message)> GetAllCachedItems()
+        {
+            foreach (var kvp in _cachedKeys)
             {
-                // Display the cached value
-                display.AppendText($"Cached value for key '{key}': {cachedValue}");
+                var userMessage = kvp.Value.Split('_');
+                var user = userMessage[0];
+                var message = userMessage[1];
+                yield return (user, message);
             }
-            else
-            {
-                MessageBox.Show($"No value found in cache for key '{key}'");
-            }
+        }
+
+        private string GenerateCacheKey(string user, string message)
+        {
+            return $"{user}_{message}";
         }
     }
 }
