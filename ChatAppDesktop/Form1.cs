@@ -93,18 +93,18 @@ namespace ChatAppDesktop
             {
                 try
                 {
-                    // Call GetAllCachedItems method on the ChatHub
+                    
                     Task<IEnumerable<(string, string)>> cachedItemsTask =
                         hubConnection.InvokeAsync<IEnumerable<(string, string)>>("GetAllCachedItems");
 
-                    // Await for the task to complete
+                  
                     IEnumerable<(string, string)> cachedItems = await cachedItemsTask;
 
                     if (cachedItems != null)
                     {
                         foreach (var item in cachedItems)
                         {
-                            // Display each cached item
+                         
                             MessageBox.Show($"User: {item.Item1}, Message: {item.Item2}");
                         }
                     }
