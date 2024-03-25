@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,42 +15,31 @@ namespace ChatAppDesktop
         public Form1()
         {
             InitializeComponent();
+            InitializeHubConnection();
+        }
 
+        private async void InitializeHubConnection()
+        {
             hubConnection = new HubConnectionBuilder()
                 .WithUrl(signalRConnection)
                 .Build();
 
-          
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 DisplayMessage($"{user}: {message}");
             });
-
-     
-            StartHubConnection();
-        }
-
-        private async void StartHubConnection()
-        {
-            
+            try
+            {
                 await hubConnection.StartAsync();
                 MessageBox.Show("Connected to SignalR hub.");
-
-                
-                await RetrieveMessagesFromCache();
-            
-            
-            
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error connecting to SignalR hub: {ex.Message}");
+            }
         }
 
-        private async Task RetrieveMessagesFromCache()
-        {
-            
-              
-                await hubConnection.InvokeAsync("OnConnectedAsync");
-           
-            
-        }
+       
 
         private async void sendBtn_Click(object sender, EventArgs e)
         {
@@ -62,7 +52,6 @@ namespace ChatAppDesktop
                 {
                     try
                     {
-                       
                         await hubConnection.SendAsync("SendMessage", user, message);
                         messageTB.Clear();
                     }
@@ -82,24 +71,16 @@ namespace ChatAppDesktop
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            
-        }
-
         private void DisplayMessage(string message)
-{
-       if (MessageListBox.InvokeRequired)
-    {
-      
-        MessageListBox.Invoke((MethodInvoker)(() => DisplayMessage(message)));
-    }
-    else
-    {
-        
-        MessageListBox.Items.Add(message);
-    }
-}
-
+        {
+            if (MessageListBox.InvokeRequired)
+            {
+                MessageListBox.Invoke((MethodInvoker)(() => DisplayMessage(message)));
+            }
+            else
+            {
+                MessageListBox.Items.Add(message);
+            }
+        }
     }
 }
