@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace WebApplication1.Hubs
@@ -8,49 +10,57 @@ namespace WebApplication1.Hubs
     public class ChatHub : Hub
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly Dictionary<string, string> _cachedKeys;
 
-        public ChatHub(IMemoryCache cache)
+        public ChatHub(IMemoryCache memoryCache)
         {
-            _memoryCache = cache;
-            _cachedKeys = new Dictionary<string, string>();
+            _memoryCache = memoryCache;
         }
+        public override async Task OnConnectedAsync()
+        {
+           
+            if (_memoryCache.TryGetValue("messages", out List<string> messages))
+            {
+                foreach (var message in messages)
+                {
+                    var messageObj = JsonConvert.DeserializeObject<Messages>(message);
+                    await Clients.Caller.SendAsync("ReceiveMessage", messageObj.User, messageObj.Message);
+                }
+            }
+
+            await base.OnConnectedAsync();
+        }
+
 
         public async Task SendMessage(string user, string message)
         {
-            string key = GenerateCacheKey(user, message);
-            string cachedMessage = _memoryCache.Get<string>(key);
+            var messageObj = new Messages { User = user, Message = message };
 
-            if (cachedMessage == null)
+           
+            if (!_memoryCache.TryGetValue("messages", out List<string> messages))
             {
-                cachedMessage = message;
-                _memoryCache.Set(key, cachedMessage);
-                _cachedKeys[key] = $"{user}_{message}";
+                messages = new List<string>();
             }
 
-            await Clients.All.SendAsync("ReceiveMessage", user, cachedMessage);
-        }
+       
+            messages.Add(JsonConvert.SerializeObject(messageObj));
 
-
-        public Task<IEnumerable<(string, string)>> GetAllCachedItems()
-        {
-            var cachedItems = new List<(string, string)>();
-
-            foreach (var kvp in _cachedKeys)
+           
+            if (messages.Count > 10)
             {
-                var userMessage = kvp.Value.Split('_');
-                var user = userMessage[0];
-                var message = userMessage[1];
-                cachedItems.Add((user, message));
+                messages.RemoveAt(0); 
             }
 
-            return Task.FromResult<IEnumerable<(string, string)>>(cachedItems);
+          
+            _memoryCache.Set("messages", messages);
+
+           
+            await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
 
-
-        private string GenerateCacheKey(string user, string message)
+        private class Messages
         {
-            return $"{user}_{message}";
+            public string User { get; set; }
+            public string Message { get; set; }
         }
     }
 }
